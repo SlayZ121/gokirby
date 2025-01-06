@@ -1,4 +1,10 @@
-import { makePlayer, setControls } from "./entities";
+import {
+  makeBirdEnemy,
+  makeFlameEnemy,
+  makeGuyEnemy,
+  makePlayer,
+  setControls,
+} from "./entities";
 import { k } from "./kaboomCtx";
 import { makeMap } from "./utils";
 
@@ -47,8 +53,29 @@ async function gameSetup() {
     k.add(kirb);
     k.camScale(0.7, 0.7);
     k.onUpdate(() => {
-      k.camPos(kirb.pos.x + 500, 870);
+      if (kirb.pos.x < level1Layout.pos.x + 432)
+        k.camPos(kirb.pos.x + 500, 870);
     });
+
+    for (const flame of level1spawnPoints.flame) {
+      makeFlameEnemy(k, flame.x, flame.y);
+    }
+
+    for (const enemy of level1spawnPoints.guy) {
+      makeGuyEnemy(k, enemy.x, enemy.y);
+    }
+
+    for (const bird of level1spawnPoints.bird) {
+      const speeds = [100, 200, 300];
+      k.loop(10, () => {
+        makeBirdEnemy(
+          k,
+          bird.x,
+          bird.y,
+          speeds[Math.floor(Math.random() * speeds.length)]
+        );
+      });
+    }
   });
 
   k.go("level-1");
